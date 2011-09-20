@@ -1,58 +1,37 @@
 console.log('Closed server startup');
 var http = require('http');
 
-/*
-function Route(controler, action, method, pattern, arg_patterns){
-	return {
-		controler: controler,
-		action: action,
-		method: method,
-		pattern: pattern,
-		arg_patterns: arg_patterns,
-		get_pattern: function(){
-			if (typeof this.pattern == "undefined")
-				return "/" + this.controler + "/" + this.action + "/";
-
-			$p = $this->pattern;
-			foreach($this->symbols as $k=>$v){
-				$p = str_replace(":$k", "(?P<$k>$v)", $p);
-			}
-
-			return $p;
-		}		
-		matches: function(url, method){
-			if(method!=this.method)
-				return false;
-
-			$res = preg_match($this->get_pattern(), $_SERVER["REDIRECT_URL"], $this->matches);
-			if($res == FALSE || $res==0)
-				return FALSE;
-			else
-				return TRUE;
-		}
-	}
-}
-*/
 http.createServer(function (request, response) {
 	console.log('[INFO]received a request');
 	
-	/*
 	var routes = {
-		incident_index: new Route(IncidentControler, "index", "GET", "/incidents"), 
-		incident: new Route( IncidentControler, "show", "GET", "/incidents/:incident_id", {incident_id: "[A-Z]"}),
-		site_index: new Route( SiteControler, "index", "GET"),
+		incident_index: new Route("IncidentControler", IncidentControler.index, "GET", "/incidents"), 
+		incident: new Route("IncidentControler", IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\w ]+"}),
 	}
 	
-	var route;
-	for (var i in routes){
-		if () request.url
-	}	
-	*/
+	var route = null;
+	for (var i in routes)
+		if (routes[i].matches(request.url, request.method)){ 
+			route = routes[i];
+			break;
+		}
 	
-	var ic = new IncidentControler(request, response);
-	ic.index();
+	if (route==null)
+		console.log("[ERROR] no route found");
+	else{
+		//console.log("[INFO]route found " + i +"\n\tcontroler=" + route.controler + "\n\taction=" + route.action);
+		console.log("[INFO]route found " + i );
+		console.log("\ttypeof action=" + typeof route.action);
+		
+		route.action(request, response);
+	}
+	
+	//var ic = new IncidentControler(request, response);
+	//ic.index();
+	
 }).listen(80);
 
+/*
 function IncidentControler(request, response){
 	console.log('IncidentControler instanciated');
 	return{
@@ -72,6 +51,22 @@ function IncidentControler(request, response){
 		show: function(){
 			console.log('[INFO]show called');
 		}
+	}
+}
+*/
+IncidentControler = {
+	index: function(request, response){
+		var url = require('url').parse(request.url,true)["query"];
+		var query_args = url["query"];
+		for (var i in query_args){
+			console.log("[INFO]query_args[" + i + "]=" + query_args[i] );
+		}
+	
+		var incidents = Incident.find(require('url').parse(request.url,true)["query"]);
+		var v = new IncidentsViewHTML(response, incidents);
+	},
+	show: function(request, response){
+		console.log('[INFO]show called');
 	}
 }
 
@@ -151,4 +146,37 @@ function IncidentsViewHTML(response, incidents){
 		r += incidents[i].get_tr();
 	r += "</table></body></html>";
 	response.end(r);
+}
+
+function Route(controler, action, method, pattern, symbols){
+	return {
+		controler: controler,
+		action: action,
+		method: method,
+		pattern: pattern,
+		symbols: symbols,
+		matches: new Array(),
+		get_pattern: function(){
+			var p = this.pattern;
+			for (var i in this.symbols)
+				p = p.replace(i, this.symbols[i]);
+
+			return p;
+		},		
+		matches: function(url, method){
+			console.log("[INFO] matches called\n\turl=" + url + "\n\tmethod=" + method);
+			
+			if(method!=this.method)
+				return false;
+				
+			var p = this.get_pattern();
+			console.log("\tpattern=" + p );
+			
+			this.matches = url.match(p);
+			if(this.matches == null || this.matches.length==0)
+				return false;
+			else
+				return true;
+		}
+	}
 }
