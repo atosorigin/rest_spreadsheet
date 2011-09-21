@@ -1,61 +1,47 @@
 console.log('Closed server startup');
 var http = require('http');
 
+function debug(msg, type){
+	if (typeof type =="undefined")
+		type = "info";
+	console.log("[" + type + "] " + msg);
+}
+
+function dump(obj){
+	var msg = "";
+	for(var i in obj)
+		msg += "obj[" + i + "]=" + obj[i] + "\n";
+	debug(msg, "DUMP");
+}
+
+var route = null;
 http.createServer(function (request, response) {
 	console.log('[INFO]received a request');
 	
 	var routes = {
-		incident_index: new Route("IncidentControler", IncidentControler.index, "GET", "/incidents"), 
-		incident: new Route("IncidentControler", IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\w ]+"}),
+		incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
+		incident_index: new Route(IncidentControler.index, "GET", "/incidents"), 
 	}
 	
-	var route = null;
 	for (var i in routes)
 		if (routes[i].matches(request.url, request.method)){ 
 			route = routes[i];
 			break;
 		}
-	
-	if (route==null)
-		console.log("[ERROR] no route found");
-	else{
-		//console.log("[INFO]route found " + i +"\n\tcontroler=" + route.controler + "\n\taction=" + route.action);
-		console.log("[INFO]route found " + i );
-		console.log("\ttypeof action=" + typeof route.action);
 		
-		route.action(request, response);
+	if (route==null){
+		console.log("[ERROR] no route found");
+		var v = new ErrorViewHTML(response, 404);
 	}
-	
-	//var ic = new IncidentControler(request, response);
-	//ic.index();
+	else{
+		console.log("[INFO]route found " + i );
+		route.action(request, response, route.symbol_matches);
+	}
 	
 }).listen(80);
 
-/*
-function IncidentControler(request, response){
-	console.log('IncidentControler instanciated');
-	return{
-		response: response,
-		request: request,
-		index: function(){
-			
-			var url = require('url').parse(request.url,true)["query"];
-			var query_args = url["query"];
-			for (var i in query_args){
-				console.log("[INFO]query_args[" + i + "]=" + query_args[i] );
-			}
-		
-			var incidents = Incident.find(require('url').parse(request.url,true)["query"]);
-			var v = new IncidentsViewHTML(this.response, incidents);
-		},
-		show: function(){
-			console.log('[INFO]show called');
-		}
-	}
-}
-*/
 IncidentControler = {
-	index: function(request, response){
+	index: function(request, response, symbol_matches){
 		var url = require('url').parse(request.url,true)["query"];
 		var query_args = url["query"];
 		for (var i in query_args){
@@ -65,8 +51,13 @@ IncidentControler = {
 		var incidents = Incident.find(require('url').parse(request.url,true)["query"]);
 		var v = new IncidentsViewHTML(response, incidents);
 	},
-	show: function(request, response){
+	show: function(request, response, symbol_matches){
 		console.log('[INFO]show called');
+		Incident.get_data();
+		var o = {};
+		o[Incident.field_names[0]] = symbol_matches[0];
+		var incidents = Incident.find(o);
+		var v = new IncidentViewHTML(response, incidents[symbol_matches[0]]);
 	}
 }
 
@@ -74,12 +65,31 @@ function Incident(fields){
 	var o = {
 		get_tr: function(){
 			var r = "<tr>"
-			for (var i in this)
-				if (i != "get_tr")
-					r+="<td>" + this[i] + "</td>";
+			var first_column = true;
+			for (var i in this){
+				if (i.search("get_") !=0 ){
+					r+="<td>" ;
+					if (first_column){
+						r+="<a href='" + route.pattern + "/" + this[i] + "'>" + this[i] + "</a>";
+						first_column = false;
+					}
+					else 
+						r+=this[i]
+					r+= "</td>";
+				}
+			}
 			r += "</tr>";
 			return r;
+		},
+		get_table: function(){
+			var r = "<table>"
+			for (var i in this)
+				if (i.search("get_") !=0)
+					r+="<tr><td>" + i + "</td><td>" + this[i] + "</td></tr>" ;
+			r += "</table>";
+			return r;
 		}
+		
 	};
 	for (var i=0; i<Incident.field_names.length; i++)
 		o[Incident.field_names[i]]=fields[i];		
@@ -148,35 +158,112 @@ function IncidentsViewHTML(response, incidents){
 	response.end(r);
 }
 
-function Route(controler, action, method, pattern, symbols){
+function IncidentViewHTML(response, incident){
+	response.writeHead(200, {'Content-Type': 'text/html'});
+	var r = "<html><body><h1>Incident</h1>";
+	r += incident.get_table();
+	r += "</body></html>";
+	response.end(r);
+}
+
+function ErrorViewHTML(response, error){
+	response.writeHead(error, {'Content-Type': 'text/html'});
+	var r = "<html><body><h1>ERROR " + error + "</h1>";
+	r += "</body></html>";
+	response.end(r);
+}
+
+function Route(action, method, pattern, symbols){
 	return {
-		controler: controler,
 		action: action,
 		method: method,
 		pattern: pattern,
 		symbols: symbols,
-		matches: new Array(),
+		symbol_matches: new Array(),
 		get_pattern: function(){
 			var p = this.pattern;
 			for (var i in this.symbols)
-				p = p.replace(i, this.symbols[i]);
+				p = p.replace(":" + i, this.symbols[i]);
 
 			return p;
 		},		
-		matches: function(url, method){
-			console.log("[INFO] matches called\n\turl=" + url + "\n\tmethod=" + method);
+		matches: function(full_path, method){
+			debug("matches called\n\tfull_path=" + full_path + "\n\tmethod=" + method);
+			
+			this.symbol_matches = new Array();
 			
 			if(method!=this.method)
 				return false;
-				
-			var p = this.get_pattern();
-			console.log("\tpattern=" + p );
 			
-			this.matches = url.match(p);
-			if(this.matches == null || this.matches.length==0)
-				return false;
-			else
-				return true;
+			var symbols_array = new Array();
+			for (var i in this.symbols)
+				symbols_array[symbols_array.length] = i;
+			var symbol_counter = 0;
+			
+			var path = full_path;
+			var path_pointer = 0;
+
+			var pattern = this.pattern;
+			var pattern_pointer = 0;
+			
+			debug("path=" + path);
+			debug("pattern=" + pattern);
+			var search_pointer = 0;
+
+			var symbol = null;
+			while (path.length){
+				debug("in loop path.length=" + path.length);
+				if (symbol == null){
+					debug("symbol == null");
+					var match_to =0;
+					if(symbol_counter<symbols_array.length){
+						symbol = symbols_array[symbol_counter];
+						symbol_counter++; //TODO: replace with pop ???
+						var j = pattern.search(":" + symbol); //TODO: should always find a symbol, if not error, add error handeling
+						match_to = j;	
+					}
+					else {
+						match_to = pattern.length;
+					}
+					var pattern_part_to_match = pattern.substring(0, match_to);
+					var path_part_to_match = path.substring(0, match_to);
+					
+					debug("pattern_part_to_match=" + pattern_part_to_match);
+					debug("path_part_to_match=" + path_part_to_match);
+					
+					search_pointer = path_part_to_match.search(pattern_part_to_match);
+					debug("search_pointer=" + search_pointer);
+					if (search_pointer!=0)
+						return false;
+					else{
+						path = path.substring(match_to, path.length);
+						pattern = pattern.substring(match_to,pattern.length);
+					}
+				}
+				else{
+					debug("symbol != null");
+					
+					var symbol_pattern = this.symbols[symbol];
+					search_pointer = path.search(symbol_pattern);
+					debug("symbol_pattern=" + symbol_pattern);
+					debug("search_pointer=" + search_pointer);
+					
+					if (search_pointer!=0)
+						return false;
+					else{
+						var matches_array = path.match(symbol_pattern);
+						var match = matches_array[0];
+						debug("match=" + match);
+						this.symbol_matches[this.symbol_matches.length] = match;
+						dump(this.matches);
+						path = path.substring(match.length, path.length);
+						pattern = pattern.substring(symbol.length +1,pattern.length);
+					}				
+					symbol = null;
+				}
+			}
+			
+			return true;
 		}
 	}
 }
