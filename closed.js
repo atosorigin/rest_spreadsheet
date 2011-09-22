@@ -234,7 +234,7 @@ function Route(action, method, pattern, symbols){
                     var match_to =0;
                     if(symbol_counter<symbols_array.length){
                         symbol = symbols_array[symbol_counter];
-                        symbol_counter++; //TODO: replace with pop ???
+                        symbol_counter++;
                         var j = pattern.search(":" + symbol); //TODO: should always find a symbol, if not error, add error handeling
                         match_to = j;	
                     }
