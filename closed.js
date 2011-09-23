@@ -12,6 +12,7 @@ http.createServer(function (request, response) {
 
     path = require('url').parse(request.url, true).pathname;
 
+    var route = null;
     for (var i in routes){
         if (routes[i].matches(path, request.method, i)){ 
             route = routes[i];
@@ -21,13 +22,12 @@ http.createServer(function (request, response) {
 		
     if (route==null){
         console.log("[ERROR] no route found");
-        var v = new ErrorViewHTML(response, 404);
+        new ErrorViewHTML(response, 404);
     }
     else{
         console.log("[INFO]route found " + i );
         route.action(request, response, route);
     }
-	
 }).listen(80);
 
 SiteControler = {
@@ -36,26 +36,56 @@ SiteControler = {
     }
 }
 
+function Query(request){
+    debug("Query: request.url=" + request.url);
+    var url = require('url').parse(request.url,true)["query"];
+    var format = "html";
+    var page = 0;
+    var args = {};
+    for (var i in url){
+        debug("query_args[" + i + "]=" + url[i] );
+        switch (i){
+            case "format":
+                format = url[i];
+                break;
+            case "page":
+                page = url[i];
+                break;
+            default:
+               args[i]=url[i];
+        }
+    }
+    debug("format=" + format);
+    return{
+        format: format,
+        page: page,
+        parameters: args
+    }    
+}
+
 IncidentControler = {
     index: function(request, response, route){
-        var symbol_matches = route.symbol_matches;
-        var url = require('url').parse(request.url,true)["query"];
-        var query_args = url["query"];
-        for (var i in query_args){
-            console.log("[INFO]query_args[" + i + "]=" + query_args[i] );
-        }
-	
-        var incidents = Incident.find(require('url').parse(request.url,true)["query"]);
-        var v = new IncidentsViewHTML(response, incidents, route);
+        debug('Incident.index called');
+        
+        var q = new Query(request);
+        var incidents = Incident.find(q.parameters);
+        if (q.format == "xml")
+            new IncidentsViewXML(response, incidents, route);
+        else
+            new IncidentsViewHTML(response, incidents, route);
     },
     show: function(request, response, route){
+        debug('Incident.show called');
         var symbol_matches = route.symbol_matches;
-        console.log('[INFO]show called');
         Incident.get_data();
         var o = {};
         o[Incident.field_names[0]] = symbol_matches[0];
         var incidents = Incident.find(o);
-        var v = new IncidentViewHTML(response, incidents[symbol_matches[0]]);
+        var q = new Query(request);
+        if (q.format == "xml")
+            new IncidentViewXML(response, incidents[symbol_matches[0]]);
+        else
+            new IncidentViewHTML(response, incidents[symbol_matches[0]]);
     }
 }
 
@@ -79,6 +109,28 @@ function Incident(fields){
             r += "</tr>";
             return r;
         },
+        get_summary_xml: function(route){
+            var r = "<incident>"
+            for (var i in this){
+                if (i.search("get_") !=0 ){
+                    r+= this[i];
+                    break;
+                }
+            }
+            r += "</incident>\n";
+            return r;
+        },
+        get_xml: function(route){
+            var r = "<incident>\n"
+            for (var i in this){
+                if (i.search("get_") !=0 ){
+                    var element = i.replace(/ /g, "_"); 
+                    r+= "<" + element + ">" + this[i] + "</" + element + ">\n";
+                }
+            }
+            r += "</incident>\n";
+            return r;
+        },
         get_table: function(){
             var r = "<table>"
             for (var i in this)
@@ -100,10 +152,14 @@ function get_fields_from_csv_line(line){
 }
 
 Incident.get_data = function(){
+
+    if(typeof Incident.cache != "undefined")
+        return;
+    
     Incident.cache = new Object();
     var fs = require("fs");
 
-    data = fs.readFileSync("closed.csv", "ASCII");
+    data = fs.readFileSync("incidents.csv", "ASCII");
     var lines = data.split("\n");
 
     if(lines.length<1){
@@ -122,8 +178,7 @@ Incident.get_data = function(){
 }
 
 Incident.find = function (params){
-    if(!Incident.cache)
-        Incident.get_data();
+    Incident.get_data();
 
     var results = {};
     for (var i in Incident.cache){
@@ -158,6 +213,17 @@ function IncidentsViewHTML(response, incidents, route){
     response.end(r);
 }
 
+function IncidentsViewXML(response, incidents, route){
+    response.writeHead(200, {
+        'Content-Type': 'text/xml'
+    });
+    var r = "<incidents>";
+    for(i in incidents)
+        r += incidents[i].get_summary_xml();
+    r += "</incidents>";
+    response.end(r);
+}
+
 function IncidentViewHTML(response, incident){
     response.writeHead(200, {
         'Content-Type': 'text/html'
@@ -165,6 +231,13 @@ function IncidentViewHTML(response, incident){
     var r = "<html><body><h1>Incident</h1>";
     r += incident.get_table();
     r += "</body></html>";
+    response.end(r);
+}
+function IncidentViewXML(response, incident){
+    response.writeHead(200, {
+        'Content-Type': 'text/xml'
+    });
+    var r = incident.get_xml();
     response.end(r);
 }
 
@@ -208,7 +281,7 @@ function Route(action, method, pattern, symbols){
             return p;
         },		
         matches: function(full_path, method,route_name){
-            debug("matches called\n\tfull_path=" + full_path + "\n\tmethod=" + method);
+            debug("matches called\n\tfull_path=" + full_path + "\n\tmethod=" + method + "\n\tpattern=" + this.pattern);
 			
             this.symbol_matches = new Array();
 			
@@ -221,16 +294,11 @@ function Route(action, method, pattern, symbols){
             var symbol_counter = 0;
             var path = full_path;
             var pattern = this.pattern;
-			
-            debug("path=" + path);
-            debug("pattern=" + pattern);
             var search_pointer = 0;
-
             var symbol = null;
+
             while (path.length){
-                debug("in loop route_name=" + route_name + "\n\tpath.length=" + path.length + "\n\tpath=" + path + "\n\tpattern=" + pattern);
                 if (symbol == null){
-                    debug("symbol == null");
                     var match_to =0;
                     if(symbol_counter<symbols_array.length){
                         symbol = symbols_array[symbol_counter];
@@ -241,18 +309,13 @@ function Route(action, method, pattern, symbols){
                     else {
                         match_to = pattern.length;
                     }
-                    debug("match_to=" + match_to );
                     if (match_to==0)
                         return false;
 
                     var pattern_part_to_match = pattern.substring(0, match_to);
                     var path_part_to_match = path.substring(0, match_to);
 					
-                    debug("pattern_part_to_match=" + pattern_part_to_match);
-                    debug("path_part_to_match=" + path_part_to_match);
-					
                     search_pointer = path_part_to_match.search(pattern_part_to_match);
-                    debug("search_pointer=" + search_pointer);
                     if (search_pointer!=0)
                         return false;
                     else{
@@ -261,28 +324,20 @@ function Route(action, method, pattern, symbols){
                     }
                 }
                 else{
-                    debug("symbol != null");
-					
                     var symbol_pattern = this.symbols[symbol];
                     search_pointer = path.search(symbol_pattern);
-                    debug("symbol_pattern=" + symbol_pattern);
-                    debug("search_pointer=" + search_pointer);
-					
                     if (search_pointer!=0)
                         return false;
                     else{
                         var matches_array = path.match(symbol_pattern);
                         var match = matches_array[0];
-                        debug("match=" + match);
                         this.symbol_matches[this.symbol_matches.length] = match;
-                        dump(this.matches);
                         path = path.substring(match.length, path.length);
                         pattern = pattern.substring(symbol.length +1,pattern.length);
                     }				
                     symbol = null;
                 }
             }
-			
             return true;
         }
     }
@@ -294,8 +349,11 @@ function debug(msg, type){
     console.log("[" + type + "] " + msg);
 }
 
-function dump(obj){
+function dump(obj, msg_to_show){
     var msg = "";
+    if (typeof msg_to_show != "undefined")
+        msg = msg_to_show + "\n";
+    
     for(var i in obj)
         msg += "obj[" + i + "]=" + obj[i] + "\n";
     debug(msg, "DUMP");
