@@ -1,5 +1,6 @@
 debug('ReST spreadsheet server startup');
 var http = require('http');
+var PORT = 8080;
 
 http.createServer(function (request, response) {
     debug('received a request');
@@ -22,7 +23,7 @@ http.createServer(function (request, response) {
         debug("Route found " + i );
         route.action(request, response, route);
     }
-}).listen(80);
+}).listen(PORT);
 
 SiteControler = {
     index: function(request, response, route){

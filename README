@@ -1,5 +1,7 @@
 The ReST Spreadsheet application has been for the Pearsons client. 
 
+This application gets basic web server functionality from https://gist.github.com/246761 a big thanks for sharing
+
 The challenge was to use the remedy data in this architecture pattern, using an extract of the data by Pearsons. This CSV file represented the back end part of the architecture model.
 The first task was to model the data as a ReST API. 
 The Middle tier code was developed using server side javascript following the MVC pattern, and deployed manually onto a new server incidents.routetodigiotallive.com. 
