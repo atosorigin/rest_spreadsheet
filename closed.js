@@ -81,11 +81,15 @@ IncidentControler = {
         var o = {};
         o[Incident.field_names[0]] = symbol_matches[0];
         var incidents = Incident.find(o);
-        var q = new Query(request);
-        if (q.format == "xml")
-            new IncidentViewXML(response, incidents[symbol_matches[0]]);
-        else
-            new IncidentViewHTML(response, incidents[symbol_matches[0]]);
+        if (is_empty(incidents))
+            new ErrorViewHTML(response, 404);
+        else{
+            var q = new Query(request);
+            if (q.format == "xml")
+                new IncidentViewXML(response, incidents[symbol_matches[0]]);
+            else
+                new IncidentViewHTML(response, incidents[symbol_matches[0]]);
+        }
     }
 }
 
@@ -362,3 +366,10 @@ function dump(obj, msg_to_show){
     debug(msg, "DUMP");
 }
 
+function is_empty(obj) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+    return true;
+}
