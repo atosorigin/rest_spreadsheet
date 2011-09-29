@@ -195,10 +195,10 @@ Incident.find = function (params){
 }
 
 Incident.get_table_header = function (){
-    var r = "<tr>";
+    var r = "<thead><tr>";
     for (var i=0; i<Incident.field_names.length;i++)
         r+= "<th>" + Incident.field_names[i] + "</th>";
-    return r + "</tr>";
+    return r + "</tr><thead>";
 }
 
 function IncidentsViewHTML(response, incidents, route){
@@ -207,9 +207,10 @@ function IncidentsViewHTML(response, incidents, route){
     });
     var r = "<html><body><h1>Incidents</h1><table>";
     r += Incident.get_table_header();
+    r += "<tbody>";
     for(i in incidents)
         r += incidents[i].get_tr(route);
-    r += "</table></body></html>";
+    r += "</tbody></table></body></html>";
     response.end(r);
 }
 
@@ -251,7 +252,9 @@ function SiteViewHTML(response){
     r += "<ul>";
     r += "<li><a href='/incidents'>/incidents</a> - a list of all the incidents</li>";
     r += "<li><a href='/incidents/INC000000201823'>/incidents/INC000000201823</a> - a single incident</li>";
-    r += "<li><a href='/incidents?Priority=High&First Name=Sharon'>/incidents?Priority=High&First Name=Sharon</a> - a subset of the incidents</li>";
+    r += "<li><a href='/incidents/INC000000201823?format=xml'>/incidents/INC000000201823?format=xml</a> - a single incident in xml format</li>";
+    r += "<li><a href='/incidents?Priority=High&Reported Source=Email'>/incidents?Priority=High&Reported Source=Email</a> - a subset of the incidents</li>";
+    r += "<li><a href='/incidents?Priority=High&Reported Source=Email&format=xml'>/incidents?Priority=High&Reported Source=Email&format=xml</a> - a subset of the incidents in xml format</li>";
     r += "</ul>";
     r += "</body></html>";
     response.end(r);
