@@ -1,8 +1,8 @@
-console.log('Closed server startup');
+debug('ReST spreadsheet server startup');
 var http = require('http');
 
 http.createServer(function (request, response) {
-    console.log('[INFO]received a request');
+    debug('received a request');
 	
     var routes = {
         incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
@@ -21,11 +21,11 @@ http.createServer(function (request, response) {
     }
 		
     if (route==null){
-        console.log("[ERROR] no route found");
+        debug("No route found", "ERROR");
         new ErrorViewHTML(response, 404);
     }
     else{
-        console.log("[INFO]route found " + i );
+        debug("Route found " + i );
         route.action(request, response, route);
     }
 }).listen(80);
