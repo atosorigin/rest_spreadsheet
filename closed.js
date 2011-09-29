@@ -4,12 +4,6 @@ var http = require('http');
 http.createServer(function (request, response) {
     debug('received a request');
 	
-    var routes = {
-        incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
-        incident_index: new Route(IncidentControler.index, "GET", "/incidents"),
-        site_index: new Route(SiteControler.index, "GET", "/") 
-    }
-
     path = require('url').parse(request.url, true).pathname;
 
     var route = null;
@@ -167,7 +161,7 @@ Incident.get_data = function(){
     var lines = data.split("\n");
 
     if(lines.length<1){
-        console.log("[ERROR] not enough lines in the file lines.length=" + lines.length);
+        debug("not enough lines in the file lines.length=" + lines.length, "ERROR");
     }
 	
     Incident.field_names = get_fields_from_csv_line(lines[0]);
@@ -175,7 +169,7 @@ Incident.get_data = function(){
     for (var j=1; j<lines.length; j++){
         var fields = get_fields_from_csv_line(lines[j]);
         if(fields.length!=Incident.field_names.length)
-            console.log("[ERROR]reading line " + j + " fields.length=" + fields.length);
+            debug("[ERROR]reading line " + j + " fields.length=" + fields.length, "ERROR");
         else
             Incident.cache[fields[0]] = new Incident(fields);
     }
@@ -304,8 +298,10 @@ function Route(action, method, pattern, symbols){
             var search_pointer = 0;
             var symbol = null;
 
-            while (path.length){
+            while (path.length ){
                 if (symbol == null){
+                    debug("matching a litteral");
+
                     var match_to =0;
                     if(symbol_counter<symbols_array.length){
                         symbol = symbols_array[symbol_counter];
@@ -331,6 +327,8 @@ function Route(action, method, pattern, symbols){
                     }
                 }
                 else{
+                    debug("matching a pattern");
+                    
                     var symbol_pattern = this.symbols[symbol];
                     search_pointer = path.search(symbol_pattern);
                     if (search_pointer!=0)
@@ -345,7 +343,14 @@ function Route(action, method, pattern, symbols){
                     symbol = null;
                 }
             }
-            return true;
+
+            debug("symbols_array.length=" + symbols_array.length);
+            debug("this.symbols_matches.length=" + this.symbol_matches.length);
+
+            if (this.symbol_matches.length < symbols_array.length)
+                return false;
+            else 
+                return true;
         }
     }
 }
@@ -372,4 +377,11 @@ function is_empty(obj) {
             return false;
     }
     return true;
+}
+
+
+var routes = {
+    incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
+    incident_index: new Route(IncidentControler.index, "GET", "/incidents"),
+    site_index: new Route(SiteControler.index, "GET", "/") 
 }
