@@ -1,103 +1,103 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Incident data</title>
-<link href="styles.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-<div id="header">
-<img src="img/pearsonLogo.png" alt="Pearson" />
-<h1>Incident data</h1>
-</div>
-<div class="floatClear"></div>
-<div id="toolboxBar"><a id="appDrawLink" href="#"><!--<img id="appDrawImage" src="img/downArrow.png" alt="Click to drop down"/>--> DATACONTROLL</a> <a id="graphButton" href="#"> GRAPHS </a></div>
-<div id="toolboxDraw" style="display: none;">
-<div id="qStringSelect">
-<h2>Change Data</h2>
-<ul>
-<li>
-Reported Source:
-<select id="reportedSourceSelect">
-  <option value="phone">Phone</option>
-  <option value="email">Email</option>
-  <option value="web">Web</option>
-  <option value="direct input">Direct Input</option>
-  <option value="other">Other</option>
-</select>
-</li>
-<li>
-Status:
-<select id="statusSelect">
-  <option value="open">Open</option>
-  <option value="closed">Closed</option>
-</select>
-</li>
-<li>
-Priority
-<select id="prioritySelect">
-  <option value="low">Low</option>
-  <option value="medium">Medium</option>
-  <option value="high">High</option>
-</select>
-</li>
-<li><input id="updateTable" type="submit" value="update" /></li>
-</ul>
-</div>
-<div id="columnSelect">
-<h2>Change Columns</h2>
-<div id="toolboxdrawC1" class="toolboxdrawC">
-<ul>
-<li><input type="checkbox" name="1" value="Incident ID" checked="checked" />Incident ID</li>
-<li><input type="checkbox" name="2" value="Incident Type" checked="checked" />Incident Type</li>
-<li><input type="checkbox" name="3" value="Priority" checked="checked" />Priority</li>
-<li><input type="checkbox" name="4" value="Status" checked="checked" />Status</li>
-<li><input type="checkbox" name="5" value="New TIME" checked="checked" />New Time</li>
-<li><input type="checkbox" name="6" value="Resolved TIME" checked="checked" />Resolved Time</li>
-</ul>
-</div>
-<div id="toolboxdrawC2" class="toolboxdrawC">
-<ul>
-<li><input type="checkbox" name="7" value="Closed TIME" checked="checked" />Closed Time</li>
-<li><input type="checkbox" name="8" value="Reported Source" checked="checked" />Reported Source</li>
-<li><input type="checkbox" name="9" value="First Name" checked="checked" />First Name</li>
-<li><input type="checkbox" name="10" value="Last Name" checked="checked" />Last Name</li>
-<li><input type="checkbox" name="11" value="Company" checked="checked" />Company</li>
-<li><input type="checkbox" name="12" value="Organization 1000000010" checked="checked" />Organisation</li>
-</ul>
-</div>
-<div id="toolboxdrawC3" class="toolboxdrawC">
-<ul>
-<li><input type="checkbox" name="13" value="Customer Site"  />Customer Site</li>
-<li><input type="checkbox" name="14" value="Department 200000006"  />Department</li>
-<li><input type="checkbox" name="15" value="Desk Location 1000000035"  />Desk Location</li>
-<li><input type="checkbox" name="16" value="Submitter"  />Submitter</li>
-<li><input type="checkbox" name="17" value="Assigned Group" checked="checked" />Assigned Group</li>
-<li><input type="checkbox" name="18" value="Assignee" checked="checked" />Assignee</li>
-</ul>
-</div>
-<div id="toolboxdrawC4" class="toolboxdrawC">
-<ul>
-<li><input type="checkbox" name="19" value="ResolvedUSER" checked="checked" />Resolved User</li>
-<li><input type="checkbox" name="20" value="Resolution Code" checked="checked" />Resolution Code</li>
-<li><input type="checkbox" name="21" value="Resolution Method" checked="checked" />Resolution Method</li>
-<li><input type="checkbox" name="22" value="Operational Categorization Tier 1" checked="checked" />Operational Categorization Tier 1</li>
-<li><input type="checkbox" name="23" value="Operational Categorization Tier 2"  />Operational Categorization Tier 2</li>
-<li><input type="checkbox" name="24" value="Operational Categorization Tier 3"  />Operational Categorization Tier 3</li>
-<li><input type="checkbox" name="25" value="Summar"  />Summary</li>
-</ul>
-</div>
-<div class="floatClear"></div>
-</div>
-<div class="floatClear"></div>
-</div>
-<div id="chart_div" style="display: none;"></div>
-<div id="result" class="functions">
-				
-</div>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Incident data</title>
+        <link href="styles.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div id="header">
+            <img src="img/pearsonLogo.png" alt="Pearson" />
+            <h1>Incident data</h1>
+        </div>
+        <div class="floatClear"></div>
+        <div id="toolboxBar"><a id="appDrawLink" href="#"><!--<img id="appDrawImage" src="img/downArrow.png" alt="Click to drop down"/>--> DATACONTROLL</a> <a id="graphButton" href="#"> GRAPHS </a></div>
+        <div id="toolboxDraw" style="display: none;">
+            <div id="qStringSelect">
+                <h2>Change Data</h2>
+                <ul>
+                    <li>
+                        Reported Source:
+                        <select id="reportedSourceSelect">
+                            <option value="phone">Phone</option>
+                            <option value="email">Email</option>
+                            <option value="web">Web</option>
+                            <option value="direct input">Direct Input</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </li>
+                    <li>
+                        Status:
+                        <select id="statusSelect">
+                            <option value="open">Open</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </li>
+                    <li>
+                        Priority
+                        <select id="prioritySelect">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </li>
+                    <li><input id="updateTable" type="submit" value="update" /></li>
+                </ul>
+            </div>
+            <div id="columnSelect">
+                <h2>Change Columns</h2>
+                <div id="toolboxdrawC1" class="toolboxdrawC">
+                    <ul>
+                        <li><input type="checkbox" name="1" value="Incident ID" checked="checked" />Incident ID</li>
+                        <li><input type="checkbox" name="2" value="Incident Type" checked="checked" />Incident Type</li>
+                        <li><input type="checkbox" name="3" value="Priority" checked="checked" />Priority</li>
+                        <li><input type="checkbox" name="4" value="Status" checked="checked" />Status</li>
+                        <li><input type="checkbox" name="5" value="New TIME" checked="checked" />New Time</li>
+                        <li><input type="checkbox" name="6" value="Resolved TIME" checked="checked" />Resolved Time</li>
+                    </ul>
+                </div>
+                <div id="toolboxdrawC2" class="toolboxdrawC">
+                    <ul>
+                        <li><input type="checkbox" name="7" value="Closed TIME" checked="checked" />Closed Time</li>
+                        <li><input type="checkbox" name="8" value="Reported Source" checked="checked" />Reported Source</li>
+                        <li><input type="checkbox" name="9" value="First Name" checked="checked" />First Name</li>
+                        <li><input type="checkbox" name="10" value="Last Name" checked="checked" />Last Name</li>
+                        <li><input type="checkbox" name="11" value="Company" checked="checked" />Company</li>
+                        <li><input type="checkbox" name="12" value="Organization 1000000010" checked="checked" />Organisation</li>
+                    </ul>
+                </div>
+                <div id="toolboxdrawC3" class="toolboxdrawC">
+                    <ul>
+                        <li><input type="checkbox" name="13" value="Customer Site"  />Customer Site</li>
+                        <li><input type="checkbox" name="14" value="Department 200000006"  />Department</li>
+                        <li><input type="checkbox" name="15" value="Desk Location 1000000035"  />Desk Location</li>
+                        <li><input type="checkbox" name="16" value="Submitter"  />Submitter</li>
+                        <li><input type="checkbox" name="17" value="Assigned Group" checked="checked" />Assigned Group</li>
+                        <li><input type="checkbox" name="18" value="Assignee" checked="checked" />Assignee</li>
+                    </ul>
+                </div>
+                <div id="toolboxdrawC4" class="toolboxdrawC">
+                    <ul>
+                        <li><input type="checkbox" name="19" value="ResolvedUSER" checked="checked" />Resolved User</li>
+                        <li><input type="checkbox" name="20" value="Resolution Code" checked="checked" />Resolution Code</li>
+                        <li><input type="checkbox" name="21" value="Resolution Method" checked="checked" />Resolution Method</li>
+                        <li><input type="checkbox" name="22" value="Operational Categorization Tier 1" checked="checked" />Operational Categorization Tier 1</li>
+                        <li><input type="checkbox" name="23" value="Operational Categorization Tier 2"  />Operational Categorization Tier 2</li>
+                        <li><input type="checkbox" name="24" value="Operational Categorization Tier 3"  />Operational Categorization Tier 3</li>
+                        <li><input type="checkbox" name="25" value="Summar"  />Summary</li>
+                    </ul>
+                </div>
+                <div class="floatClear"></div>
+            </div>
+            <div class="floatClear"></div>
+        </div>
+        <div id="chart_div" style="display: none;"></div>
+        <div id="result" class="functions">
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script src="script.js" type="text/javascript"></script>
-</body>
+        </div>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script src="script.js" type="text/javascript"></script>
+    </body>
 </html>
