@@ -1,6 +1,20 @@
+The ReST Spreadsheet application has been for the Pearsons client. 
+
+The challenge was to use the remedy data in this architecture pattern, using an extract of the data by Pearsons. This CSV file represented the back end part of the architecture model.
+The first task was to model the data as a ReST API. 
+The Middle tier code was developed using server side javascript following the MVC pattern, and deployed manually onto a new server incidents.routetodigiotallive.com. 
+A front end was developed using a google doc spreadsheet to show how visualisations can be achieved using the data. The same visualisations could be achieved by extracting the data from the back end and using excel, however this model would not scale, would not allow the back end to be replaced, augmented or changed and certainly would not allow other front ends to be designed based up on the same data set without manual distribution of the data.
+
+Hopefully what this demonstrates is that multiple consumers can be developed based on the same ReST Api. These can be across many devices, operating systems and applications (e.g. An iOS/Android application, a spreadsheet or a HTML5 webpage). Although the specific data used here might have a limited appeal, the power of presenting corporate data ReST(fully) gives the user the ultimate choice about how they wish to consume that data.
+
+Supporting information
+========================
+* White paper on Front Middle Back https://docs.google.com/a/routetodigital.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B0nl0PiKHURCYTlkZjJlN2ItMzIwOC00N2ZjLThmYTEtMTNmZDZkM2FkM2E3&hl=en
+* Collaboration on Middle API https://docs.google.com/a/routetodigital.com/document/d/1g9Dxf_p-Z9f-ARnpYMPLMLGzQLbWsrJYdT1EuC4C1dM/edit?hl=en_US
+* Development code,issues  and documents https://github.com/atosorigin/rest_spreadsheet/wiki
+* Incident API Spreadsheet https://docs.google.com/a/routetodigital.com/document/d/1g9Dxf_p-Z9f-ARnpYMPLMLGzQLbWsrJYdT1EuC4C1dM/edit?hl=en_US
+
 TODO
 =============
-* Formats
-* site index
 * paging
 * make it generic for all spreadsheets
