@@ -294,14 +294,15 @@ function Route(action, method, pattern, symbols){
                 symbols_array[symbols_array.length] = i;
             var symbol_counter = 0;
             var path = full_path;
+            if (path.length>1 && path[path.length-1]=="/")
+                path=path.substring(0,path.length-1);
+            
             var pattern = this.pattern;
             var search_pointer = 0;
             var symbol = null;
 
             while (path.length ){
                 if (symbol == null){
-                    debug("matching a litteral");
-
                     var match_to =0;
                     if(symbol_counter<symbols_array.length){
                         symbol = symbols_array[symbol_counter];
@@ -327,8 +328,6 @@ function Route(action, method, pattern, symbols){
                     }
                 }
                 else{
-                    debug("matching a pattern");
-                    
                     var symbol_pattern = this.symbols[symbol];
                     search_pointer = path.search(symbol_pattern);
                     if (search_pointer!=0)
@@ -343,9 +342,6 @@ function Route(action, method, pattern, symbols){
                     symbol = null;
                 }
             }
-
-            debug("symbols_array.length=" + symbols_array.length);
-            debug("this.symbols_matches.length=" + this.symbol_matches.length);
 
             if (this.symbol_matches.length < symbols_array.length)
                 return false;
