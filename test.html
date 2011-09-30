@@ -15,11 +15,12 @@
     
                 $.ajax({
                     type: "GET",
-                    url: "http://incidents.routetodigitallive.com:8080/incidents?format=xml",
-                    crossDomain: true,
+                    //url: "http://incidents.routetodigitallive.com:8080/incidents?format=xml",
+                    url: "sites.xml",
+                    //crossDomain: true,
                     dataTypeString: "xml",
                     success: function(data){
-                        alert( "success: " + data );
+                        alert( "success: >>" + data+ "<<"  + typeof data );
                     },
                     error: function(jqXHR, textStatus, errorThrown){
                         alert( "error: " );
