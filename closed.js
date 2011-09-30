@@ -217,7 +217,7 @@ function IncidentsViewXML(response, incidents, route){
     response.writeHead(200, {
         'Content-Type': 'text/xml'
     });
-    var r = "<incidents>";
+    var r = "<?xml version=\"1.0\"?><incidents>";
     for(i in incidents)
         r += incidents[i].get_summary_xml();
     r += "</incidents>";
@@ -237,7 +237,7 @@ function IncidentViewXML(response, incident){
     response.writeHead(200, {
         'Content-Type': 'text/xml'
     });
-    var r = incident.get_xml();
+    var r = "<?xml version=\"1.0\"?>" + incident.get_xml();
     response.end(r);
 }
 
