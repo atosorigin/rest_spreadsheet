@@ -1,6 +1,6 @@
 debug('ReST spreadsheet server startup');
 var http = require('http');
-var PORT = 8080;
+var PORT = 80;
 
 http.createServer(function (request, response) {
     debug('received a request');
@@ -28,6 +28,11 @@ http.createServer(function (request, response) {
 SiteControler = {
     index: function(request, response, route){
         var v = new SiteViewHTML(response);
+    },
+    ui_show: function (request, response, route){
+        var fs = require("fs");
+        data = fs.readFileSync("ui.html", "ASCII");
+        new SiteUIViewHTML(response, data);
     }
 }
 
@@ -259,6 +264,14 @@ function SiteViewHTML(response){
     response.end(r);
 }
 
+function SiteUIViewHTML(response, data){
+    response.writeHead(200, {
+        'Content-Type': 'text/html'
+    });
+    var r = data;
+    response.end(r);
+}
+
 function ErrorViewHTML(response, error){
     response.writeHead(error, {
         'Content-Type': 'text/html'
@@ -378,6 +391,7 @@ function is_empty(obj) {
 
 
 var routes = {
+    ui_show: new Route (SiteControler.ui_show, "GET", "/ui.html"),
     incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
     incident_index: new Route(IncidentControler.index, "GET", "/incidents"),
     site_index: new Route(SiteControler.index, "GET", "/") 
