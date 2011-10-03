@@ -51,8 +51,20 @@ a {
 }
 
 #toolboxBar {
-	padding-left: 20px;
+	padding-left: 3px;
 	background-color: ;
+}
+
+#toolboxBar a {
+	background: #364395;
+	border: none;
+	color: #ffffff;
+	font-weight: bold;
+	letter-spacing: 1px;
+	margin: auto;
+	padding: 2px 25px;
+	text-shadow: 0 1px 1px #000000;
+	text-transform: uppercase;
 }
 
 #qStringSelect {
@@ -115,7 +127,7 @@ a {
 <h1>Incident data</h1>
 </div>
 <div class="floatClear"></div>
-<div id="toolboxBar"><a id="appDrawLink" href="#"><!--<img id="appDrawImage" src="img/downArrow.png" alt="Click to drop down"/>--> DATACONTROLL</a> <a id="graphButton" href="#"> GRAPHS </a></div>
+<div id="toolboxBar"><a id="appDrawLink" href="#">Data</a> <a id="graphButton" href="#">Graphs</a></div>
 <div id="toolboxDraw" style="display: none;">
 <div id="qStringSelect">
 <h2>Change Data</h2>
@@ -252,7 +264,8 @@ Organisation:
 		function checkColumns() {
 			$("input[type=checkbox]:not(:checked)").each(
 			function() { 
-			var index = $(this).attr("name"); $('table').find('td:nth-child(' + index + '),th:nth-child(' + index + ')').toggle(); });
+			var index = $(this).attr("name"); 
+			$('#results').$('table tr th').find('td:nth-child(' + index + '),th:nth-child(' + index + ')').toggle(); });
 		}	
 		
 		
