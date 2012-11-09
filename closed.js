@@ -1,6 +1,6 @@
 debug('ReST spreadsheet server startup');
 var http = require('http');
-var PORT = 8080;
+var PORT = 80;
 
 http.createServer(function (request, response) {
     debug('received a request');
@@ -28,6 +28,11 @@ http.createServer(function (request, response) {
 SiteControler = {
     index: function(request, response, route){
         var v = new SiteViewHTML(response);
+    },
+    ui_show: function (request, response, route){
+        var fs = require("fs");
+        data = fs.readFileSync("ui.html", "ASCII");
+        new SiteUIViewHTML(response, data);
     }
 }
 
@@ -217,7 +222,7 @@ function IncidentsViewXML(response, incidents, route){
     response.writeHead(200, {
         'Content-Type': 'text/xml'
     });
-    var r = "<incidents>";
+    var r = "<?xml version=\"1.0\"?><incidents>";
     for(i in incidents)
         r += incidents[i].get_summary_xml();
     r += "</incidents>";
@@ -237,7 +242,7 @@ function IncidentViewXML(response, incident){
     response.writeHead(200, {
         'Content-Type': 'text/xml'
     });
-    var r = incident.get_xml();
+    var r = "<?xml version=\"1.0\"?>" + incident.get_xml();
     response.end(r);
 }
 
@@ -255,7 +260,20 @@ function SiteViewHTML(response){
     r += "<li><a href='/incidents?Priority=High&Reported Source=Email'>/incidents?Priority=High&Reported Source=Email</a> - a subset of the incidents</li>";
     r += "<li><a href='/incidents?Priority=High&Reported Source=Email&format=xml'>/incidents?Priority=High&Reported Source=Email&format=xml</a> - a subset of the incidents in xml format</li>";
     r += "</ul>";
+    r += "<h2>Example Front End applications that interact with the API</h2>";
+    r += "<ul>";
+    r += "<li><a href='/ui.html'>Web simple web page</a> - This is a web page that interacts with the API using jQuery and Ajax</li>";
+    r += "<li><a href='https://docs.google.com/a/routetodigital.com/spreadsheet/ccc?key=0Ah1iRlWVeoYbdDlOODVlbHA1R2R4Y1RqRnJPWFBoQ2c&hl=en_US'>Google spread sheet</a> - A google doc that uses the API from google script</li>";
+    r += "</ul>";
     r += "</body></html>";
+    response.end(r);
+}
+
+function SiteUIViewHTML(response, data){
+    response.writeHead(200, {
+        'Content-Type': 'text/html'
+    });
+    var r = data;
     response.end(r);
 }
 
@@ -378,6 +396,7 @@ function is_empty(obj) {
 
 
 var routes = {
+    ui_show: new Route (SiteControler.ui_show, "GET", "/ui.html"),
     incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
     incident_index: new Route(IncidentControler.index, "GET", "/incidents"),
     site_index: new Route(SiteControler.index, "GET", "/") 

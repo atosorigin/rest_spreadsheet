@@ -1,0 +1,439 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Incident data</title>
+<style>
+body {
+	font-family: Helvetica, arial;
+	padding: 0px;
+	margin: 0px;
+}
+
+a {
+	text-decoration: none;
+}
+
+#header img {
+	float: left;
+}
+
+#header h1 {
+	float: left;
+	color: #fff;
+}
+
+#header {
+	background-color: #364395;  
+	width: 1250px;
+	height: 76px;
+}
+
+#toolboxDraw img {
+	padding-left: 100px;
+}
+
+#toolboxDraw {
+	list-style-type: none;
+	width: 1200px;
+}
+
+#toolboxDraw ul {
+	list-style-type: none;
+}
+
+.toolboxdrawC {
+	float: left;
+}
+
+.toolboxdrawC ul {
+	list-style-type: none;
+}
+
+#toolboxBar {
+	padding-left: 3px;
+	background-color: ;
+}
+
+#toolboxBar a {
+	background: #364395;
+	border: none;
+	color: #ffffff;
+	font-weight: bold;
+	letter-spacing: 1px;
+	margin: auto;
+	padding: 2px 25px;
+	text-shadow: 0 1px 1px #000000;
+	text-transform: uppercase;
+}
+
+#qStringSelect {
+	/*border-bottom: 1px solid #DEDEDE;*/
+	/*padding: 20px;*/
+	float: left;
+}
+
+#columnSelect {
+	float: right;
+	/*padding: 20px;*/
+}
+
+.floatClear {
+	clear: both;
+}
+
+#result h1 {
+	display: none;
+}
+
+#result table {
+    background-color: #CDCDCD;
+    font-family: arial;
+    font-size: 8pt;
+    margin: 10px 0 15px;
+    text-align: left;
+    width: 1250px;
+}
+#result table thead tr th, #result table tfoot tr th {
+    background-color: #E6EEEE;
+    border: 1px solid #FFFFFF;
+    font-size: 8pt;
+    padding: 4px;
+}
+#result table thead tr .header {
+    background-position: right center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+#result table tbody td {
+    background-color: #FFFFFF;
+    color: #3D3D3D;
+    padding: 4px;
+    vertical-align: top;
+}
+#result table tbody tr.odd td {
+    background-color: #F0F0F6;
+}
+
+.charts {
+	float:left;
+}
+
+</style>
+</head>
+<body>
+<div id="header">
+<img src="http://www.pearson.com/media/images/section-images/media/logos/Pearson_Without_Strapline_Blue_RGB_LoRes.png" alt="Pearson" height="76" width="270" />
+<h1>Incident data</h1>
+</div>
+<div class="floatClear"></div>
+<div id="toolboxBar"><a id="appDrawLink" href="#">Data</a> <a id="graphButton" href="#">Graphs</a></div>
+<div id="toolboxDraw" style="display: none;">
+<div id="qStringSelect">
+<h2>Change Data</h2>
+<ul>
+<li>
+Reported Source:
+<select id="reportedSourceSelect">
+	<option value="">All -----</option>
+  <option value="Phone">Phone</option>
+  <option value="Email">Email</option>
+  <option value="Web">Web</option>
+  <option value="Direct input">Direct Input</option>
+  <option value="Other">Other</option>
+</select>
+</li>
+<li>
+Status:
+<select id="statusSelect">
+	<option value="">All -----</option>
+  <option value="Open">Open</option>
+  <option value="Closed">Closed</option>
+</select>
+</li>
+<li>
+Organisation:
+<select id="prioritySelect">
+	<option value="">All -----</option>
+  <option value="Pearson Education">Pearson Education</option>
+  <option value="Financial Times">Financial Times</option>
+  <option value="Arts and Sciences">Arts and Sciences</option>
+  <option value="Pearson Shared Services">Pearson Shared Services</option>
+  <option value="Penguin">Penguin</option>
+</select>
+</li>
+<li><input id="updateTable" type="submit" value="update" /></li>
+</ul>
+</div>
+<div id="columnSelect">
+<h2>Change Columns</h2>
+<div id="toolboxdrawC1" class="toolboxdrawC">
+<ul>
+<li><input type="checkbox" name="1" value="Incident ID" checked="checked" />Incident ID</li>
+<li><input type="checkbox" name="2" value="Incident Type" checked="checked" />Incident Type</li>
+<li><input type="checkbox" name="3" value="Priority" checked="checked" />Priority</li>
+<li><input type="checkbox" name="4" value="Status" checked="checked" />Status</li>
+<li><input type="checkbox" name="5" value="New TIME" checked="checked" />New Time</li>
+<li><input type="checkbox" name="6" value="Resolved TIME" checked="checked" />Resolved Time</li>
+</ul>
+</div>
+<div id="toolboxdrawC2" class="toolboxdrawC">
+<ul>
+<li><input type="checkbox" name="7" value="Closed TIME" checked="checked" />Closed Time</li>
+<li><input type="checkbox" name="8" value="Reported Source" checked="checked" />Reported Source</li>
+<li><input type="checkbox" name="9" value="First Name" checked="checked" />First Name</li>
+<li><input type="checkbox" name="10" value="Last Name" checked="checked" />Last Name</li>
+<li><input type="checkbox" name="11" value="Company" checked="checked" />Company</li>
+<li><input type="checkbox" name="12" value="Organization 1000000010" checked="checked" />Organisation</li>
+</ul>
+</div>
+<div id="toolboxdrawC3" class="toolboxdrawC">
+<ul>
+<li><input type="checkbox" name="13" value="Customer Site"  />Customer Site</li>
+<li><input type="checkbox" name="14" value="Department 200000006"  />Department</li>
+<li><input type="checkbox" name="15" value="Desk Location 1000000035"  />Desk Location</li>
+<li><input type="checkbox" name="16" value="Submitter"  />Submitter</li>
+<li><input type="checkbox" name="17" value="Assigned Group" checked="checked" />Assigned Group</li>
+<li><input type="checkbox" name="18" value="Assignee" checked="checked" />Assignee</li>
+</ul>
+</div>
+<div id="toolboxdrawC4" class="toolboxdrawC">
+<ul>
+<li><input type="checkbox" name="19" value="ResolvedUSER" checked="checked" />Resolved User</li>
+<li><input type="checkbox" name="20" value="Resolution Code" checked="checked" />Resolution Code</li>
+<li><input type="checkbox" name="21" value="Resolution Method" checked="checked" />Resolution Method</li>
+<li><input type="checkbox" name="22" value="Operational Categorization Tier 1" checked="checked" />Operational Categorization Tier 1</li>
+<li><input type="checkbox" name="23" value="Operational Categorization Tier 2"  />Operational Categorization Tier 2</li>
+<li><input type="checkbox" name="24" value="Operational Categorization Tier 3"  />Operational Categorization Tier 3</li>
+<li><input type="checkbox" name="25" value="Summar"  />Summary</li>
+</ul>
+</div>
+<div class="floatClear"></div>
+</div>
+<div class="floatClear"></div>
+</div>
+<div id="chart_div" style="display: none;">
+<div id="chart1_div" class="charts"></div>
+<div id="chart2_div" class="charts"></div>
+<div id="chart3_div" class="charts"></div>
+<div class="floatClear"></div>
+</div>
+<div id="result" class="functions">
+				
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+
+// Load table contents
+	
+	$.ajaxSetup ({  cache: true  });  
+    var ajax_load = "<p>loading...</p>";  
+    var loadUrl =  "incidents"; //"http://incidents.routetodigitallive.com/incidents?Priority=Low&First%20Name=Lucy"; 
+	var queryString = null;
+	
+	// Load all incidents on page load
+	$(document).ready(function() { $("#result").html(ajax_load).load(loadUrl); })
+	
+	$("#updateTable").click(function() { loadQueryString();
+	$("#result").html(ajax_load).load(loadUrl, queryString, function(data) {  checkColumns(); setChartValues();
+	drawChart(); }); 
+	});
+			
+	// Get Values of drop downs, build query string and then reload (for each dropdown)	
+		$("#reportedSourceSelect").change(function() {
+			loadQueryString();		
+		});
+		$("#statusSelect").change(function() {
+			loadQueryString();
+		});
+		$("#prioritySelect").change(function() {
+			loadQueryString();
+		});
+	// Build query string 	
+		function loadQueryString() {
+			var reportedSource = $("#reportedSourceSelect").val();
+			var status =  $("#statusSelect").val();
+			var priority = $("#prioritySelect").val();
+			queryString = "Reported%20Source=" + reportedSource + "&Status=" + status + "&Organization 1000000010=" + priority;
+		}
+	
+	// Check which columns are required
+		function checkColumns() {
+			$("input[type=checkbox]:not(:checked)").each(
+			function() { 
+			var index = $(this).attr("name"); 
+			$('#results').$('table tr th').find('td:nth-child(' + index + '),th:nth-child(' + index + ')').toggle(); });
+		}	
+		
+		
+
+	
+// Toolbox Draw
+
+$("#appDrawLink").click(function() {
+	$("#toolboxDraw").toggle();
+	//var arrowImage = $("#appDrawImage").attr("src");
+	
+	//if (arrowImage == 'img/downArrow.png')
+	//{
+	//	$("#appDrawImage").attr("src", "img/upArrow.png");
+	//}
+	//else if (arrowImage == 'img/upArrow.png')
+	//{
+	//	$("#appDrawImage").attr("src", "img/downArrow.png");
+	//}
+	 
+});
+
+$("#graphButton").click(function() {
+	setChartValues();
+	drawChart();
+	$("#chart_div").toggle();
+	//var arrowImage = $("#appDrawImage").attr("src");
+	
+	//if (arrowImage == 'img/downArrow.png')
+	//{
+	//	$("#appDrawImage").attr("src", "img/upArrow.png");
+	//}
+	//else if (arrowImage == 'img/upArrow.png')
+	//{
+	//	$("#appDrawImage").attr("src", "img/downArrow.png");
+	//}
+	 
+});
+
+// Add & remove columns
+
+$("input:checkbox").click(function(){
+    var index = $(this).attr("name");
+	$('table').find('td:nth-child(' + index + '),th:nth-child(' + index + ')').toggle();
+	
+});
+
+
+// Google chart
+var lowPriority = 0;//$('table').find('td:nth-child(3),th:nth-child(3):contains("Low")').size();
+var mediumPriority = 0 ; //$('table').find('td:nth-child(3),th:nth-child(3):contains("Medium")').size();
+var highPriority = 0;
+
+
+function sumOfColumns(columnIndex, hasHeader, search) {
+	var tot = 0;
+	$("table tr" + (hasHeader ? ":gt(0)" : "")).children("td:nth-child(" + columnIndex + ")").each(function() {
+	if ($(this).html() == search)
+	tot++;
+	});
+	return tot;
+}
+
+function setChartValues()
+{
+ lowPriority = sumOfColumns(3, 1, "Low");//$('table').find('td:nth-child(3),th:nth-child(3):contains("Low")').size();
+ mediumPriority = sumOfColumns(3, 1, "Medium") ; //$('table').find('td:nth-child(3),th:nth-child(3):contains("Medium")').size();
+ highPriority = sumOfColumns(3, 1, "High"); //$('table').find('td:nth-child(3),th:nth-child(3):contains("High")').size();
+ ftVariable = sumOfColumns(11, 1, "FT"); 
+ pearsonVariable = sumOfColumns(11, 1, "Pearson"); 
+ salesforceHigherVariable = sumOfColumns(11, 1, "Salesforce Higher Education"); 
+ salesforceCurrVariable = sumOfColumns(11, 1, "Salesforce Curriculum"); 
+ phoneVariable = sumOfColumns(8, 1, "Phone"); 
+ emailVariable = sumOfColumns(8, 1, "Email"); 
+ webVariable = sumOfColumns(8, 1, "Web"); 
+ directVariable = sumOfColumns(8, 1, "Direct input"); 
+ otherVariable = sumOfColumns(8, 1, "Other"); 
+}
+
+//Google example
+
+// Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+      
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(drawChart);
+      
+      // Callback that creates and populates a data table, 
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+		drawBarChart();
+		drawPieChart();
+		drawLineChart()
+	  }
+	  
+	  function drawPieChart() {
+		//alert(mediumPriority);
+		//alert(highPriority);
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Priority');
+      data.addColumn('number', 'Number');
+      data.addRows([
+        ['Low', lowPriority],
+        ['Medium', mediumPriority],
+        ['High', highPriority]
+      ]);
+
+      // Set chart options
+      var options = {'title':'Incident Prioritys',
+                     'width':400,
+                     'height':300};
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.PieChart(document.getElementById('chart1_div'));
+      chart.draw(data, options);
+    }
+	
+	      function drawBarChart() {
+		//alert(mediumPriority);
+		//alert(highPriority);
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Source');
+      data.addColumn('number', 'Number');
+      data.addRows([
+        ['Phone', phoneVariable],
+        ['Email', emailVariable],
+        ['Web', webVariable],
+		['Direct input', directVariable],
+		['Other', otherVariable]
+      ]);
+
+      // Set chart options
+      var options = {'title':'Reported Source',
+                     'width':400,
+                     'height':300};
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.BarChart(document.getElementById('chart2_div'));
+      chart.draw(data, options);
+    }
+	
+		      function drawLineChart() {
+		//alert(mediumPriority);
+		//alert(highPriority);
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Company Name');
+      data.addColumn('number', 'Number');
+      data.addRows([
+        ['FT', ftVariable],
+        ['Pearson', pearsonVariable],
+        ['Salesforce Higher Education', salesforceHigherVariable],
+		['Salesforce Curriculum', salesforceCurrVariable]
+      ]);
+
+      // Set chart options
+      var options = {'title':'Company',
+                     'width':400,
+                     'height':300};
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart3_div'));
+      chart.draw(data, options);
+    }
+
+</script>
+</body>
+</html>
