@@ -1,13 +1,25 @@
-The ReST Spreadsheet application has been for the Pearsons client. 
+The ReST Spreadsheet application is designed to allow access to the data within a 
+spreadsheet via a ReST api, using a light weight simple implementation of node.js. 
 
-This application gets basic web server functionality from https://gist.github.com/246761 a big thanks for sharing
+This application gets basic web server functionality from https://gist.github.com/246761 
+a big thanks for sharing.
 
-The challenge was to use the remedy data in this architecture pattern, using an extract of the data by Pearsons. This CSV file represented the back end part of the architecture model.
-The first task was to model the data as a ReST API. 
-The Middle tier code was developed using server side javascript following the MVC pattern, and deployed manually onto a new server incidents.routetodigiotallive.com. 
-A front end was developed using a google doc spreadsheet to show how visualisations can be achieved using the data. The same visualisations could be achieved by extracting the data from the back end and using excel, however this model would not scale, would not allow the back end to be replaced, augmented or changed and certainly would not allow other front ends to be designed based up on the same data set without manual distribution of the data.
+This shows the front middle back architecture pattern. 
+The front is represented by the html pages, the middle is represented by the 
+rest_spreadsheet.js file (this is the node.js file) the back is represented by 
+the spreadsheet.
 
-Hopefully what this demonstrates is that multiple consumers can be developed based on the same ReST Api. These can be across many devices, operating systems and applications (e.g. An iOS/Android application, a spreadsheet or a HTML5 webpage). Although the specific data used here might have a limited appeal, the power of presenting corporate data ReST(fully) gives the user the ultimate choice about how they wish to consume that data.
+The Middle tier code was developed using server side javascript following the MVC 
+pattern. 
+Additional to the HTML front end a front end was developed using a google doc 
+spreadsheet to show how visualisations can be achieved using the data. 
+
+Hopefully what this demonstrates is that multiple consumers can be developed based 
+on the same ReST Api. These can be across many devices, operating systems and 
+applications (e.g. An iOS/Android application, a spreadsheet or a HTML5 webpage). 
+Although the specific data used here might have a limited appeal, the power of 
+presenting corporate data ReST(fully) gives the user the ultimate choice about 
+how they wish to consume that data.
 
 Supporting information
 ========================
