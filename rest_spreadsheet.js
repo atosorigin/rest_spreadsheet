@@ -1,4 +1,4 @@
-debug('ReST spreadsheet server startup');
+debug('ReST spreadsheet server startup created by @simondelliott');
 var http = require('http');
 var PORT = 8080;
 
@@ -9,7 +9,7 @@ http.createServer(function (request, response) {
 
     var route = null;
     for (var i in routes){
-        if (routes[i].matches(path, request.method, i)){ 
+        if (routes[i].matches( decodeURIComponent(path), request.method, i)){ 
             route = routes[i];
             break;
         }
@@ -66,29 +66,33 @@ function Query(request){
 IncidentControler = {
     index: function(request, response, route){
         debug('Incident.index called');
+        var symbol_matches = route.symbol_matches;
+        var ss = symbol_matches[0];
         
         var q = new Query(request);
-        var incidents = Incident.find(q.parameters);
+        var incidents = Incident.find(q.parameters, ss);
         if (q.format == "xml")
-            new IncidentsViewXML(response, incidents, route);
+            new IncidentsViewXML(response, incidents, route, ss);
         else
-            new IncidentsViewHTML(response, incidents, route);
+            new IncidentsViewHTML(response, incidents, route, ss);
     },
     show: function(request, response, route){
         debug('Incident.show called');
         var symbol_matches = route.symbol_matches;
-        Incident.get_data();
+        var ss = route.symbol_matches_hash.spreadsheet;
+        var id = symbol_matches[1];
+        Incident.get_data(ss);
         var o = {};
-        o[Incident.field_names[0]] = symbol_matches[0];
-        var incidents = Incident.find(o);
+        o[Incident.field_names[0]] = id;
+        var incidents = Incident.find(o, ss);
         if (is_empty(incidents))
             new ErrorViewHTML(response, 404);
         else{
             var q = new Query(request);
             if (q.format == "xml")
-                new IncidentViewXML(response, incidents[symbol_matches[0]]);
+                new IncidentViewXML(response, incidents[id], route, ss);
             else
-                new IncidentViewHTML(response, incidents[symbol_matches[0]]);
+                new IncidentViewHTML(response, incidents[id], route, ss);
         }
     }
 }
@@ -102,7 +106,7 @@ function Incident(fields){
                 if (i.search("get_") !=0 ){
                     r+="<td>" ;
                     if (first_column){
-                        r+="<a href='" + route.pattern + "/" + this[i] + "'>" + this[i] + "</a>";
+                        r+="<a href='" + route.get_matched_pattern() + "/" + this[i] + "'>" + this[i] + "</a>" ;
                         first_column = false;
                     }
                     else 
@@ -114,25 +118,25 @@ function Incident(fields){
             return r;
         },
         get_summary_xml: function(route){
-            var r = "<incident>"
+            var r = "<" + route.symbol_matches_hash.spreadsheet + ">"
             for (var i in this){
                 if (i.search("get_") !=0 ){
                     r+= this[i];
                     break;
                 }
             }
-            r += "</incident>\n";
+            r += "</" + route.symbol_matches_hash.spreadsheet + ">\n";
             return r;
         },
         get_xml: function(route){
-            var r = "<incident>\n"
+            var r = "<" + route.symbol_matches_hash.spreadsheet + ">\n"
             for (var i in this){
                 if (i.search("get_") !=0 ){
                     var element = i.replace(/ /g, "_"); 
                     r+= "<" + element + ">" + this[i] + "</" + element + ">\n";
                 }
             }
-            r += "</incident>\n";
+            r += "</" + route.symbol_matches_hash.spreadsheet + ">\n";
             return r;
         },
         get_table: function(){
@@ -173,15 +177,16 @@ function CSVtoArray(text) {
     return a;
 };
 
-Incident.get_data = function(){
+Incident.get_data = function(ss){
 
-    if(typeof Incident.cache != "undefined")
-        return;
+    // enable caching ... uncomment this
+    //if(typeof Incident.cache != "undefined")
+    //    return;
     
     Incident.cache = new Object();
     var fs = require("fs");
 
-    data = fs.readFileSync("example.csv", "ASCII");
+    data = fs.readFileSync("spreadsheets/" + ss + ".csv", "ASCII");
     var lines = data.split("\n");
 
     if(lines.length<1){
@@ -189,7 +194,7 @@ Incident.get_data = function(){
     }
 	
     Incident.field_names = CSVtoArray(lines[0]);
-	
+
     for (var j=1; j<lines.length; j++){
         var fields = CSVtoArray(lines[j]);
         if(fields.length!=Incident.field_names.length)
@@ -199,8 +204,8 @@ Incident.get_data = function(){
     }
 }
 
-Incident.find = function (params){
-    Incident.get_data();
+Incident.find = function (params, ss){
+    Incident.get_data(ss);
 
     var results = {};
     for (var i in Incident.cache){
@@ -223,11 +228,11 @@ Incident.get_table_header = function (){
     return r + "</tr><thead>";
 }
 
-function IncidentsViewHTML(response, incidents, route){
+function IncidentsViewHTML(response, incidents, route, ss){
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
-    var r = "<html><body><h1>Incidents</h1><table>";
+    var r = "<html><body><h1>" + ss + "</h1><table>";
     r += Incident.get_table_header();
     r += "<tbody>";
     for(i in incidents)
@@ -236,31 +241,31 @@ function IncidentsViewHTML(response, incidents, route){
     response.end(r);
 }
 
-function IncidentsViewXML(response, incidents, route){
+function IncidentsViewXML(response, incidents, route, ss){
     response.writeHead(200, {
         'Content-Type': 'text/xml'
     });
-    var r = "<?xml version=\"1.0\"?><incidents>";
+    var r = "<?xml version=\"1.0\"?>\n<" + ss +">";
     for(i in incidents)
         r += incidents[i].get_summary_xml();
-    r += "</incidents>";
+    r += "</" + ss + ">";
     response.end(r);
 }
 
-function IncidentViewHTML(response, incident){
+function IncidentViewHTML(response, incident, route, ss){
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
-    var r = "<html><body><h1>Incident</h1>";
+    var r = "<html><body><h1>" + ss + "</h1>";
     r += incident.get_table();
     r += "</body></html>";
     response.end(r);
 }
-function IncidentViewXML(response, incident){
+function IncidentViewXML(response, incident, route, ss){
     response.writeHead(200, {
         'Content-Type': 'text/xml'
     });
-    var r = "<?xml version=\"1.0\"?>" + incident.get_xml();
+    var r = "<?xml version=\"1.0\"?>" + incident.get_xml(route);
     response.end(r);
 }
 
@@ -269,17 +274,29 @@ function SiteViewHTML(response){
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
+        
+    
     var r = "<html><body><h1>ReST Spreadsheet</h1>";
     r += "<h2>Spreadsheets espressed as a <a href='http://en.wikipedia.org/wiki/Representational_state_transfer'>ReST</a> API</h2>";
     r += "<ul>";
-    r += "<li><a href='/incidents'>/incidents</a> - a list of all the incidents</li>";
-    r += "<li><a href='/incidents/1'>/incidents/1</a> - a single incident with id 1 (the first column)</li>";
-    r += "<li><a href='/incidents/1?format=xml'>/incidents/1?format=xml</a> - a single incident in xml format</li>";
-    r += "<li><a href='/incidents?Year=1999'>/incidents?Year=1999</a> - a subset of the incidents</li>";
+    r += "<li><a href='/cars'>/cars</a> - a list of all the cars</li>";
+    r += "<li><a href='/cars/1'>/cars/1</a> - a single car with id 1 (the first column)</li>";
+    r += "<li><a href='/cars/1?format=xml'>/cars/1?format=xml</a> - a single car in xml format</li>";
+    r += "<li><a href='/cars?Year=1999'>/cars?Year=1999</a> - a subset of the cars</li>";
     r += "</ul>";
     r += "<h2>Example Front End applications that interact with the API</h2>";
     r += "<ul>";
     r += "<li><a href='/ui.html'>Web simple web page</a> - This is a web page that interacts with the API using jQuery and Ajax</li>";
+    r += "</ul>";
+    r += "<h2>Example spreadsheets that you can use</h2>";
+    r += "<ul>";
+    var fs = require("fs");
+    var examples = fs.readdirSync("spreadsheets", "ASCII");
+    for (var i =0; i<examples.length;i++){
+        var ss = examples[i];
+        ss= ss.substr(0, ss.length - 4);
+        r += "<li><a href='/" + ss + "'>" + ss + "</a></li>"
+    }
     r += "</ul>";
     r += "</body></html>";
     response.end(r);
@@ -304,21 +321,20 @@ function ErrorViewHTML(response, error){
 
 function Route(action, method, pattern, symbols){
     return {
-        action: action,
-        method: method,
-        pattern: pattern,
-        symbols: symbols,
-        symbol_matches: new Array(),
-        get_pattern: function(){
+        action: action, // control action that is called when the pattern matches
+        method: method, // HTTP method (GET, PUT, POST, DELETE) to match the pattern on
+        pattern: pattern, // The pattern to match the request against including any symbols e.g. /invoices/:invoice_number
+        symbols: symbols, // The set of symbols to be found in the pattern, as an associative array
+        symbol_matches: new Array(), // Array of matched symbols in the order that they appear in the pattern
+        symbol_matches_hash: {},
+        get_matched_pattern: function(){
             var p = this.pattern;
             for (var i in this.symbols)
-                p = p.replace(":" + i, this.symbols[i]);
-
+                p = p.replace(":" + i, this.symbol_matches_hash[i]);
             return p;
         },		
         matches: function(full_path, method,route_name){
             debug("matches called\n\tfull_path=" + full_path + "\n\tmethod=" + method + "\n\tpattern=" + this.pattern);
-			
             this.symbol_matches = new Array();
 			
             if(method!=this.method)
@@ -371,6 +387,7 @@ function Route(action, method, pattern, symbols){
                         var matches_array = path.match(symbol_pattern);
                         var match = matches_array[0];
                         this.symbol_matches[this.symbol_matches.length] = match;
+                        this.symbol_matches_hash[symbol] = match;
                         path = path.substring(match.length, path.length);
                         pattern = pattern.substring(symbol.length +1,pattern.length);
                     }				
@@ -397,8 +414,14 @@ function dump(obj, msg_to_show){
     if (typeof msg_to_show != "undefined")
         msg = msg_to_show + "\n";
     
-    for(var i in obj)
-        msg += "obj[" + i + "]=" + obj[i] + "\n";
+    for(var i in obj){
+        msg += "obj[" + i + "]=";
+        if (typeof obj[i] == "function")
+           msg += "function\n";
+        else 
+           msg += obj[i] + "\n";
+    }
+    
     debug(msg, "DUMP");
 }
 
@@ -412,7 +435,7 @@ function is_empty(obj) {
 
 var routes = {
     ui_show: new Route (SiteControler.ui_show, "GET", "/ui.html"),
-    incident_show: new Route(IncidentControler.show, "GET", "/incidents/:incident_id", {incident_id: "[\\w ]+"}),
-    incident_index: new Route(IncidentControler.index, "GET", "/incidents"),
+    incident_show: new Route(IncidentControler.show, "GET", "/:spreadsheet/:incident_id", {spreadsheet: "[\\w ]+",incident_id: "[\\w ]+"}),
+    incident_index: new Route(IncidentControler.index, "GET", "/:spreadsheet", {spreadsheet: "[\\w ]+"}),
     site_index: new Route(SiteControler.index, "GET", "/") 
 }

@@ -23,6 +23,7 @@ how they wish to consume that data.
 
 Supporting information
 ========================
+* Installation for node.js http://nodejs.org/
 * White paper on Front Middle Back https://docs.google.com/a/routetodigital.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B0nl0PiKHURCYTlkZjJlN2ItMzIwOC00N2ZjLThmYTEtMTNmZDZkM2FkM2E3&hl=en
 * Collaboration on Middle API https://docs.google.com/a/routetodigital.com/document/d/1g9Dxf_p-Z9f-ARnpYMPLMLGzQLbWsrJYdT1EuC4C1dM/edit?hl=en_US
 * Development code,issues  and documents https://github.com/atosorigin/rest_spreadsheet/wiki
